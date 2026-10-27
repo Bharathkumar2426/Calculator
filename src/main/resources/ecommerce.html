@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-Commerce Testing Demo</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:900px;margin:25px auto;padding:0 18px;background:#f5f7fb;color:#172033}
+h1{color:#183b70} section{background:white;border:1px solid #d8deea;border-radius:10px;padding:18px;margin:16px 0}
+label{display:block;margin:10px 0 5px}input{padding:9px;width:min(420px,95%);box-sizing:border-box}
+button{margin-top:12px;padding:9px 15px;background:#2459a9;color:white;border:0;border-radius:5px;cursor:pointer}
+.msg{min-height:20px;font-weight:bold;margin-top:10px}.ok{color:#08783e}.err{color:#b42318}
+small{color:#526078}
+</style>
+</head>
+<body>
+<h1>E-Commerce Application — Selenium Practice</h1>
+<p>This local demo page is included in the ZIP. Sample rules: password 8–16 characters, quantity 1–10, search 1–50 characters, card number 16 digits, expiry MM/YY and CVV 3 digits.</p>
+
+<section>
+<h2>1. Login</h2>
+<form id="loginForm">
+<label for="email">Email</label><input id="email" type="text" autocomplete="off">
+<label for="password">Password</label><input id="password" type="password">
+<button id="loginBtn" type="submit">Login</button>
+</form><div id="loginMessage" class="msg" aria-live="polite"></div>
+</section>
+
+<section>
+<h2>2. Product Quantity</h2>
+<form id="quantityForm" novalidate>
+<label for="quantity">Quantity (1–10)</label><input id="quantity" type="number" step="1">
+<button id="addToCart" type="submit">Add to cart</button>
+</form><div id="quantityMessage" class="msg" aria-live="polite"></div>
+</section>
+
+<section>
+<h2>3. Product Search</h2>
+<form id="searchForm">
+<label for="search">Search products (1–50 characters)</label><input id="search" type="text" maxlength="100">
+<button id="searchBtn" type="submit">Search</button>
+</form><div id="searchMessage" class="msg" aria-live="polite"></div>
+</section>
+
+<section>
+<h2>4. Payment Details (demo only; no real payment)</h2>
+<form id="paymentForm">
+<label for="cardNumber">Card number (16 digits)</label><input id="cardNumber" type="text" inputmode="numeric">
+<label for="expiry">Expiry date (MM/YY)</label><input id="expiry" type="text" placeholder="12/29">
+<label for="cvv">CVV (3 digits)</label><input id="cvv" type="password" inputmode="numeric">
+<label for="cardholder">Cardholder name</label><input id="cardholder" type="text">
+<button id="payBtn" type="submit">Validate payment details</button>
+</form><div id="paymentMessage" class="msg" aria-live="polite"></div>
+<small>Do not enter real payment information. This is only a local testing demo.</small>
+</section>
+
+<script>
+function message(id, text, ok) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg ' + (ok ? 'ok' : 'err');
+}
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const pw = document.getElementById('password').value;
+  if (!email || !pw) return message('loginMessage','Email and password are required.',false);
+  if (!/^[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}$/.test(email))
+    return message('loginMessage','Invalid email format.',false);
+  if (pw.length < 8 || pw.length > 16)
+    return message('loginMessage','Password must contain 8–16 characters.',false);
+  if (email === 'user@gmail.com' && pw === 'Pass1234')
+    return message('loginMessage','Login successful.',true);
+  message('loginMessage','Incorrect email or password.',false);
+});
+document.getElementById('quantityForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const raw = document.getElementById('quantity').value;
+  const n = Number(raw);
+  if (!raw || !Number.isInteger(n) || n < 1 || n > 10)
+    return message('quantityMessage','Quantity must be an integer from 1 to 10.',false);
+  message('quantityMessage','Quantity accepted.',true);
+});
+document.getElementById('searchForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const s = document.getElementById('search').value.trim();
+  if (!s) return message('searchMessage','Please enter a search term.',false);
+  if (s.length > 50) return message('searchMessage','Search must not exceed 50 characters.',false);
+  if (/^xyz123unknown$/i.test(s))
+    return message('searchMessage','No products found.',true);
+  message('searchMessage','Search completed for: ' + s,true);
+});
+document.getElementById('paymentForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const card = document.getElementById('cardNumber').value.trim();
+  const expiry = document.getElementById('expiry').value.trim();
+  const cvv = document.getElementById('cvv').value.trim();
+  const name = document.getElementById('cardholder').value.trim();
+  if (!/^\d{16}$/.test(card)) return message('paymentMessage','Card number must contain exactly 16 digits.',false);
+  if (!/^\d{2}\/\d{2}$/.test(expiry)) return message('paymentMessage','Expiry must use MM/YY format.',false);
+  const parts = expiry.split('/').map(Number);
+  if (parts[0] < 1 || parts[0] > 12) return message('paymentMessage','Expiry month must be 01–12.',false);
+  if (!/^\d{3}$/.test(cvv)) return message('paymentMessage','CVV must contain exactly 3 digits.',false);
+  if (!name) return message('paymentMessage','Cardholder name is required.',false);
+  message('paymentMessage','Payment details accepted for demo validation.',true);
+});
+</script>
+</body>
+</html>

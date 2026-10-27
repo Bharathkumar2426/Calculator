@@ -8,6 +8,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Java / Maven build
+target/
+*.class
+*.log
+*.iml
+
 # IDE and editors
 .vscode/
 .idea/

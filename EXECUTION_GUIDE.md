@@ -1,6 +1,6 @@
 # Execution Guide for CNN Image Segmentation
 
-This guide outlines the prerequisite setup, dependencies, and step-by-step instructions required to execute both [`cnn_segmentation.py`](file:///d:/DL/cnn_segmentation.py) and [`test.py`](file:///d:/DL/test.py).
+This guide outlines the prerequisite setup, dependencies, and step-by-step instructions required to execute [`cnn_segmentation.py`](file:///d:/DL/cnn_segmentation.py), [`cnn_image.py`](file:///d:/DL/cnn_image.py), and [`test.py`](file:///d:/DL/test.py).
 
 ---
 
@@ -34,7 +34,7 @@ python -m venv .venv
 ```
 
 ### Step 1.3: Install Required Dependencies
-Ensure all libraries needed across both scripts are installed in the active environment:
+Ensure all libraries needed across all scripts are installed in the active environment:
 ```powershell
 pip install tensorflow numpy matplotlib pillow
 ```
@@ -42,10 +42,11 @@ pip install tensorflow numpy matplotlib pillow
 #### Dependency Breakdown:
 | Package | Required By | Purpose |
 | :--- | :--- | :--- |
-| `tensorflow` | Both | CNN model architecture, training, and prediction |
-| `numpy` | Both | Array manipulation, reshaping, and numeric operations |
-| `pillow` | `cnn_segmentation.py` | Synthetic image creation & ground-truth mask drawing |
-| `matplotlib` | `cnn_segmentation.py` | Visualizing input, ground truth, and predicted segmentation masks |
+| `tensorflow` | All | CNN model architecture, training, and prediction |
+| `numpy` | All | Array manipulation, reshaping, and numeric operations |
+| `pillow` | `cnn_segmentation.py`, `cnn_image.py` | Image creation, reading, and preprocessing |
+| `matplotlib` | `cnn_segmentation.py`, `cnn_image.py` | Visualizing input, ground truth, and predicted segmentation masks |
+| `tkinter` | `cnn_image.py` | File dialog window for selecting custom images (built into standard Python) |
 
 ---
 
@@ -80,7 +81,25 @@ python cnn_segmentation.py
 
 ---
 
-## 3. File 2: `test.py`
+## 3. File 2: `cnn_image.py`
+
+### Overview
+This script enables interactive image segmentation on custom images:
+1. Opens a native file dialog for you to browse and select any image (`.jpg`, `.jpeg`, `.png`, `.bmp`) from your machine.
+2. Automatically resizes and normalizes the image to 64×64 grayscale.
+3. Generates an initial approximate binary mask via thresholding.
+4. Trains a CNN model for 5 epochs on the selected image.
+5. Displays the original image, approximate mask, and CNN predicted segmentation side-by-side in Matplotlib.
+
+### Execution Command
+```powershell
+python cnn_image.py
+```
+*(Or `py cnn_image.py`)*
+
+---
+
+## 4. File 3: `test.py`
 
 ### Overview
 This script demonstrates an end-to-end convolutional segmentation workflow on a synthetic batch of 100 images (64×64×1). It defines an Encoder-Decoder CNN architecture with 2 downsampling pooling layers and 2 upsampling layers, trains for 3 epochs with batch size 8, and evaluates output dimensions.
@@ -107,9 +126,9 @@ python test.py
 
 ---
 
-## 4. Troubleshooting & Notes
+## 5. Troubleshooting & Notes
 
 - **TensorFlow oneDNN / CUDA Info Warnings**:
   Messages such as `I tensorflow/core/platform/cpu_feature_guard.cc...` are standard TensorFlow informational notices indicating CPU optimizations and do not represent errors.
 - **Headless Environments**:
-  If running on a server without a display and executing `cnn_segmentation.py`, Matplotlib might raise a display error. You can save plots to disk instead by replacing `plt.show()` with `plt.savefig("segmentation_output.png")`.
+  If running on a server without a display and executing visual scripts, Matplotlib might raise a display error. You can save plots to disk instead by replacing `plt.show()` with `plt.savefig("segmentation_output.png")`.
